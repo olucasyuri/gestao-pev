@@ -680,13 +680,13 @@ async function sendViaHermes(tipo, payload, btnId) {
 function sendEscalaDiscord() {
   const txt = document.getElementById('escala-output').textContent;
   if (!txt || txt.includes('Configure')) { showToast('Gere a escala antes de enviar!'); return; }
-  sendViaHermes('escala', { escalaState }, 'btn-send-escala');
+  sendViaHermes('escala', { escalaState, data: currentDate }, 'btn-send-escala');
 }
 
 function sendAlmocoDiscord() {
   const txt = document.getElementById('almoco-output').textContent;
   if (!txt || txt.includes('Marque')) { showToast('Marque os almoços antes de enviar!'); return; }
-  sendViaHermes('almoco', { almocoState }, 'btn-send-almoco');
+  sendViaHermes('almoco', { almocoState, data: currentDate }, 'btn-send-almoco');
 }
 
 // Init
