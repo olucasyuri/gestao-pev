@@ -15,23 +15,31 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'HERMES_URL não configurada no Vercel' });
   }
 
-  const { tipo, escalaState, almocoState, data } = req.body || {};
+  const { tipo, escalaState, almocoState, data, colaboradores } = req.body || {};
 
   try {
     let endpoint, payload;
 
     if (tipo === 'escala') {
       endpoint = `${HERMES_URL}/send/escala`;
-      payload  = { escalaState, data }; // ← data incluída
+      payload  = { escalaState, data };
+
     } else if (tipo === 'almoco') {
       endpoint = `${HERMES_URL}/send/almoco`;
-      payload  = { almocoState, data }; // ← data incluída
+      payload  = { almocoState, data };
+
+    } else if (tipo === 'sync-colaboradores') {
+      endpoint = `${HERMES_URL}/sync/colaboradores`;
+      payload  = { colaboradores };
+
     } else if (tipo === 'cron-escala') {
       endpoint = `${HERMES_URL}/send/escala`;
       payload  = { escalaState: null, data: null };
+
     } else if (tipo === 'cron-almoco') {
       endpoint = `${HERMES_URL}/send/almoco`;
       payload  = { almocoState: null, data: null };
+
     } else {
       return res.status(400).json({ error: `tipo inválido: ${tipo}` });
     }
