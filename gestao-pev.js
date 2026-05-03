@@ -28,6 +28,20 @@ let COLABORADORES = JSON.parse(localStorage.getItem('pev_colaboradores') || 'nul
 
 function saveColaboradores() {
   localStorage.setItem('pev_colaboradores', JSON.stringify(COLABORADORES));
+  syncColaboradoresHermes();
+}
+
+async function syncColaboradoresHermes() {
+  try {
+    await fetch('/api/hermes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tipo: 'sync-colaboradores', colaboradores: COLABORADORES })
+    });
+    console.log('[PEV] Colaboradores sincronizados com o Hermes');
+  } catch (e) {
+    console.warn('[PEV] Sync com Hermes falhou:', e.message);
+  }
 }
 
 // ─── STATE ──────────────────────────────────────────────
