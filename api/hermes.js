@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'HERMES_URL não configurada no Vercel' });
   }
 
-  const { tipo, escalaState, almocoState, data } = req.body || {};
+  const { tipo, escalaState, almocoState, data, colaboradores } = req.body || {};
 
   try {
     let endpoint, payload;
@@ -23,15 +23,23 @@ module.exports = async function handler(req, res) {
     if (tipo === 'escala') {
       endpoint = `${HERMES_URL}/send/escala`;
       payload  = { escalaState, data };
+
     } else if (tipo === 'almoco') {
       endpoint = `${HERMES_URL}/send/almoco`;
       payload  = { almocoState, data };
+
+    } else if (tipo === 'sync-colaboradores') {
+      endpoint = `${HERMES_URL}/sync/colaboradores`;
+      payload  = { colaboradores };
+
     } else if (tipo === 'cron-escala') {
       endpoint = `${HERMES_URL}/send/escala`;
-      payload  = { escalaState: null };
+      payload  = { escalaState: null, data: null };
+
     } else if (tipo === 'cron-almoco') {
       endpoint = `${HERMES_URL}/send/almoco`;
-      payload  = { almocoState: null };
+      payload  = { almocoState: null, data: null };
+
     } else {
       return res.status(400).json({ error: `tipo inválido: ${tipo}` });
     }
@@ -45,13 +53,13 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json().catch(() => ({}));
+    const responseData = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      return res.status(502).json({ error: 'Hermes retornou erro', details: data });
+      return res.status(502).json({ error: 'Hermes retornou erro', details: responseData });
     }
 
-    return res.status(200).json({ ok: true, ...data });
+    return res.status(200).json({ ok: true, ...responseData });
 
   } catch (err) {
     return res.status(500).json({ error: 'Não foi possível contatar o Hermes', details: err.message });
